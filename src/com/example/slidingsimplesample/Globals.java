@@ -14,8 +14,8 @@ public class Globals extends Application {
 	public void adpaterInit() {
 		if (adapter.isEmpty()) {
 			adapter.add("토플");
-			adapter.add("기본영단어1");
-			adapter.add("기본영단어2");
+			adapter.add("Test1");
+			adapter.add("Test2");
 		} else {
 			// 비어있지 않으면 리스트 불러옴
 		}
