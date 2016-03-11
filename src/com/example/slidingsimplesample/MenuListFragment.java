@@ -67,10 +67,10 @@ public class MenuListFragment extends ListFragment {
 		if (bookmark_size != 0) {
 			// 북마크 불러오기
 			for (int i = 0; i < bookmark_size; i++) {
-				mEdit1.remove("bookmark" + String.valueOf(i));
-				mEdit1.putInt("bookmark_size", 0);
-				mEdit1.commit();
-				// bookmark.add(i, sp.getString("bookmark" + i, null));
+				//mEdit1.remove("bookmark" + String.valueOf(i));
+				//mEdit1.putInt("bookmark_size", 0);
+				//mEdit1.commit();
+				bookmark.add(i, sp.getString("bookmark" + i, null));
 			}
 		}
 
@@ -126,9 +126,11 @@ public class MenuListFragment extends ListFragment {
 				File file = new File(dirPath);
 
 				for (File f : file.listFiles()) {
-					String token[] = f.getName().split("[.]");
-					if (token[1].equals("csv")) {
-						arrayAdapter.add(f.getName());
+					if (f.getName().contains(".")) {
+						String token[] = f.getName().split("[.]");
+						if (token[1].equals("csv")) {
+							arrayAdapter.add(f.getName());
+						}
 					}
 				}
 
@@ -136,46 +138,48 @@ public class MenuListFragment extends ListFragment {
 						.setTitle("다운로드")
 
 						.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
 
-					}
-				})
+							}
+						})
 
 						.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-					// .setSingleChoiceItems(strItems, -1, new
-					// DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						String msg = "";
-						msg = "Load the" + arrayAdapter.getItem(which);
+							// .setSingleChoiceItems(strItems, -1, new
+							// DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								String msg = "";
+								msg = "Load the" + arrayAdapter.getItem(which);
 
-						oneDay.putExtra("name", "all");
-						oneDay.putExtra("fileName", arrayAdapter.getItem(which));
+								oneDay.putExtra("name", "all");
+								oneDay.putExtra("fileName", arrayAdapter.getItem(which));
 
-						// 리스트 추가
-						String token[] = arrayAdapter.getItem(which).split("[.]");
-						String str = token[0];
-						adapter.add(str);
-						setListAdapter(adapter);
-						((Globals) getActivity().getApplication()).setList(list);
-						// sp =
-						// getActivity().getSharedPreferences("EnglishList", 0);
-						// mEdit1 = sp.edit();
+								// 리스트 추가
+								String token[] = arrayAdapter.getItem(which).split("[.]");
+								String str = token[0];
+								adapter.add(str);
+								setListAdapter(adapter);
+								((Globals) getActivity().getApplication()).setList(list);
+								// sp =
+								// getActivity().getSharedPreferences("EnglishList",
+								// 0);
+								// mEdit1 = sp.edit();
 
-						// Set<String> set = new LinkedHashSet<String>();
+								// Set<String> set = new
+								// LinkedHashSet<String>();
 
-						for (int i = 0; i < list.size(); i++) {
-							mEdit1.putString("EnglishList" + i, list.get(i));
-							mEdit1.commit();
-						}
-						mEdit1.putInt("listSize", list.size());
-						mEdit1.commit();
+								for (int i = 0; i < list.size(); i++) {
+									mEdit1.putString("EnglishList" + i, list.get(i));
+									mEdit1.commit();
+								}
+								mEdit1.putInt("listSize", list.size());
+								mEdit1.commit();
 
-						// 액티비티실행
-						startActivity(oneDay);
-					}
-				}).show();
+								// 액티비티실행
+								startActivity(oneDay);
+							}
+						}).show();
 
 			}
 		});
@@ -187,9 +191,11 @@ public class MenuListFragment extends ListFragment {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 
+				DialogInterface mPopupDlg = null;
 				final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(v.getContext(),
 						android.R.layout.simple_list_item_1, bookmark);
 
+				Log.i("INFO", "북마크 사이즈 : "+ String.valueOf(bookmark.size()));
 				if (bookmark.size() == 0) {
 					arrayAdapter.add("등록된 영어 단어장이 없습니다.");
 				}
@@ -197,28 +203,32 @@ public class MenuListFragment extends ListFragment {
 						.setIcon(R.drawable.ic_launcher)
 
 						.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if (arrayAdapter.getItem(0).equals("등록된 영어 단어장이 없습니다.")) {
-							arrayAdapter.remove("등록된 영어 단어장이 없습니다.");
-						}
-					}
-				}).setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								if (arrayAdapter.getItem(0).equals("등록된 영어 단어장이 없습니다.")) {
+									arrayAdapter.remove("등록된 영어 단어장이 없습니다.");
+								}
+							}
+						}).setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								String filename = arrayAdapter.getItem(which);
+								if (filename.equals("토플")) {
+									SelectItem(0);
+								} else if (filename.equals("기본영단어1")) {
+									SelectItem(1);
+								} else if (filename.equals("기본영단어2")) {
+									SelectItem(2);
+								} else {
+									Log.i("INFO", "하잇");
+									String filename1 = arrayAdapter.getItem(which)+".csv";
+									oneDay.putExtra("name", "all");
+									oneDay.putExtra("fileName", filename1);
+									startActivity(oneDay);
+								}
 
-						String filename = arrayAdapter.getItem(which) + ".csv";
-
-						oneDay.putExtra("name", "all");
-						oneDay.putExtra("fileName", filename);
-
-						startActivity(oneDay);
-					}
-				}
-
-				).show();
-
-
+							}
+						}).show();
 			}
 
 		});
@@ -254,66 +264,67 @@ public class MenuListFragment extends ListFragment {
 				AlertDialog alert = new AlertDialog.Builder(v.getContext()).setIcon(R.drawable.ic_launcher)
 
 						.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// 취소
-					}
-				})
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// 취소
+							}
+						})
 
 						.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-					// .setSingleChoiceItems(strItems, -1, new
-					// DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
+							// .setSingleChoiceItems(strItems, -1, new
+							// DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
 
-						if (arrayAdapter.getItem(which).equals("즐겨찾기에 추가")) {
+								if (arrayAdapter.getItem(which).equals("즐겨찾기에 추가")) {
 
-							bookmark.add(list.get(pos));
+									bookmark.add(list.get(pos));
 
-							for (int i = 0; i < bookmark.size(); i++) {
-								mEdit1.putString("bookmark" + i, bookmark.get(i));
-							}
+									for (int i = 0; i < bookmark.size(); i++) {
+										mEdit1.putString("bookmark" + i, bookmark.get(i));
+									}
 
-							mEdit1.putInt("bookmark_size", bookmark.size());
-							mEdit1.commit();
-						} else {
-							// 리스트 삭제
+									mEdit1.putInt("bookmark_size", bookmark.size());
+									mEdit1.commit();
+								} else {
+									// 리스트 삭제
 
-							int size = list.size() - pos;
-							// 위치 옮기기 및 preference 삭제
-							Log.i("INFO", String.valueOf(size));
+									int size = list.size() - pos;
+									// 위치 옮기기 및 preference 삭제
+									Log.i("INFO", String.valueOf(size));
 
-							if (size == 1) {
-								mEdit1.remove("EnglishList" + String.valueOf(pos));
-							} else {
-								for (int i = pos; i < list.size() - 1; i++) {
-									mEdit1.putString("EnglishList" + String.valueOf(i), list.get(i + 1));
-									Log.i("INFO", "EnglishList" + String.valueOf(i) + "에 넣을 값은 : " + list.get(i + 1));
+									if (size == 1) {
+										mEdit1.remove("EnglishList" + String.valueOf(pos));
+									} else {
+										for (int i = pos; i < list.size() - 1; i++) {
+											mEdit1.putString("EnglishList" + String.valueOf(i), list.get(i + 1));
+											Log.i("INFO",
+													"EnglishList" + String.valueOf(i) + "에 넣을 값은 : " + list.get(i + 1));
+										}
+										Log.i("INFO", "지울 인덱스 : " + String.valueOf(list.size() - 1));
+										mEdit1.remove("EnglishList" + String.valueOf(list.size() - 1));
+									}
+
+									// 삭제 (리스트삭제, 어뎁터 업데이트)
+									adapter.remove(list.get(pos));
+
+									((Globals) getActivity().getApplication()).setList(list);
+
+									mEdit1.putInt("listSize", list.size());
+									Log.i("INFO", "삭제 후 리스트 사이즈  : " + String.valueOf(list.size()));
+
+									mEdit1.commit();
+
+									sp = getActivity().getSharedPreferences("EnglishList", 0);
+									mEdit1 = sp.edit();
+									for (int i = 0; i < list.size(); i++) {
+										Log.i("INFO", "list 값  : " + list.get(i));
+										Log.i("INFO", "저장 값  : " + sp.getString("EnglishList" + i, null));
+									}
 								}
-								Log.i("INFO", "지울 인덱스 : " + String.valueOf(list.size() - 1));
-								mEdit1.remove("EnglishList" + String.valueOf(list.size() - 1));
+
 							}
-
-							// 삭제 (리스트삭제, 어뎁터 업데이트)
-							adapter.remove(list.get(pos));
-
-							((Globals) getActivity().getApplication()).setList(list);
-
-							mEdit1.putInt("listSize", list.size());
-							Log.i("INFO", "삭제 후 리스트 사이즈  : " + String.valueOf(list.size()));
-
-							mEdit1.commit();
-
-							sp = getActivity().getSharedPreferences("EnglishList", 0);
-							mEdit1 = sp.edit();
-							for (int i = 0; i < list.size(); i++) {
-								Log.i("INFO", "list 값  : " + list.get(i));
-								Log.i("INFO", "저장 값  : " + sp.getString("EnglishList" + i, null));
-							}
-						}
-
-					}
-				}).show();
+						}).show();
 				return true;
 			}
 		});
