@@ -504,6 +504,8 @@ public class ModelListViewActivity extends ListActivity {
 		return new ModelSecond(s, place);
 	}
 
+	
+	//속도 셋팅 여기서 하는거야
 	class MyThread extends Thread {
 		public void run() {
 			for (int i = 0; i < mChildList001.size(); i++) {
