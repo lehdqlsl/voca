@@ -218,8 +218,7 @@ public class MenuListFragment extends ListFragment {
 
 				).show();
 
-				Intent intent = new Intent(getActivity(), Bookmark_list.class);
-				startActivity(intent);
+
 			}
 
 		});
